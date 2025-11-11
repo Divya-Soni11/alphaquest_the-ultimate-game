@@ -13,11 +13,13 @@ import { dirname, join } from 'path';
 dotenv.config();
 const app = express();
 app.use(bodyParser.json());
+import cookieParser from 'cookie-parser';
+app.use(cookieParser());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 app.use(express.static(path.join(__dirname,'../../frontend')));
 const PORT = process.env.PORT || 3000;
-const mongoURL = process.env.MONGOURL;
+const mongoURL = process.env.MONGOURI;
 
 const connect = ()=>{mongoose.connect(mongoURL, {
         useNewUrlParser: true,

@@ -1,27 +1,24 @@
 import mongoose, { Schema, trusted } from "mongoose";
 import playerSignup from "./SignupSchema.js";
 
-const team= new mongoose.model({
+const team= new Schema({
     teamName:{
         type:String,
         required:true
     },
     members:[{
         type:Schema.Types.ObjectId,
-        ref:playerSignup,
-        required:true
+        ref:'playerSignup'
     }],
     teamId:{
         type:String,
         required:true
     },
     firstScore:{
-        type:Int16Array,
-        required:true
+        type:Number
     },
     updatedScore:{
-        type:Int16Array,
-        required:true
+        type:Number
     }
 });
 

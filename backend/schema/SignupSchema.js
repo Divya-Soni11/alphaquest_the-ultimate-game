@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import team from "./TeamSchema.js";
 
-const playerSignup=new mongoose.Schema({
+const playerSignup=new Schema({
     userName:{
         type:String,
         required:true
@@ -16,17 +16,15 @@ const playerSignup=new mongoose.Schema({
         required:true
     },
     firstScore:{
-        type:Int16Array,
-        required:true
+        type:Number
     },
     updatedScore:{
-        type:Int16Array,
-        required:true
+        type:Number
     },
     teamId:{
         type:Schema.Types.ObjectId,
-        ref:team
+        ref:'team'
     }
 });
 
-export default mongoose.model('player', player, 'players');
+export default mongoose.model('player', playerSignup, 'players');

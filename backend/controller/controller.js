@@ -1,6 +1,5 @@
 import playerSignup from '../schema/SignupSchema.js';
 import TeamSchema from '../schema/TeamSchema.js';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 export const signup=async(req,res)=>{
@@ -57,48 +56,63 @@ export const signup=async(req,res)=>{
     }
 }
 
-export const signIn=async(req,res)=>{
-    try{
-        const{userName,password}=req.body;
+import jwt from 'jsonwebtoken';
 
-        if(!userName||!password){
-            return res.status(400).json({
-                message:"enter complete details, before signing in!",
-                success:false
-            });
-        }
-        else{
-            const validUser=await playerSignup.findOne({userName});
-            if(validUser){
-                if(await bcrypt.compare(password,validUser.password)){
-                    return res.status(200).json({
-                        message:"Signed in successfully!",
-                        success:true
-                    });
-                }
-                else{
-                    return res.status(400).json({
-                        message:"Incorrect password!",
-                        success:false
-                    });
-                }
-            }
-            else{
-                return res.status(404).json({
-                    message:"We couldn't find you in signed up players! Sign up first!",
-                    success:false
-                });
-            }
-        }
+export const signIn = async (req, res) => {
+  try {
+    const { userName, password } = req.body;
+
+    if (!userName || !password) {
+      return res.status(400).json({
+        message: "Enter complete details before signing in!",
+        success: false
+      });
     }
-    catch(error){
-        console.error(error);
-        return res.status(500).json({
-            message:"Internal Server error!",
-            success:false
-        });
+
+    const validUser = await playerSignup.findOne({ userName });
+
+    if (!validUser) {
+      return res.status(404).json({
+        message: "We couldn't find you in signed up players! Sign up first!",
+        success: false
+      });
     }
-}
+
+    const isPasswordValid = await bcrypt.compare(password, validUser.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        message: "Incorrect password!",
+        success: false
+      });
+    }
+
+    // Create JWT payload and token
+    const payload = { userId: validUser._id, userName: validUser.userName };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    // Set token as HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // set cookie secure in production
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    return res.status(200).json({
+      message: "Signed in successfully!",
+      success: true,
+      token // also send token in body for flexibility
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server error!",
+      success: false
+    });
+  }
+};
+
 
 
 function generateTeamId(length = 8){
@@ -123,7 +137,7 @@ export const CreateTeam=async(req,res)=>{
             existingPlayer.teamId=teamCode;
             const newTeam=new TeamSchema({
                 teamName,
-                members:[userName],
+                members:[existingPlayer._id],
                 teamId:teamCode,
                 firstScore:null,
                 updatedScore:null
@@ -174,7 +188,7 @@ export const joinTeam=async(req,res)=>{
                     });
                 }
                 else{
-                    team.members,push(userName);
+                    team.members,push(Member._id);
                     await team.save();
                     await Member.save();
                     return res.status(200).json({
