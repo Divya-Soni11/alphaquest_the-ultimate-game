@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Guessing Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <!-- Sign Up Page -->
+        <div class="page active" id="signup-page">
+            <div class="header">
+                <div class="club-logo">
+                    <img src="AlphaOneLogo.png" alt="Club Logo" class="logo-image">
+                </div>
+                <div class="logo">AlphaQuest: The Ultimate Challenge</div>
+                <div class="subtitle">CREATE YOUR ACCOUNT</div>
+            </div>
+            
+            <div class="icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            
+            <div class="form-group">
+                <label for="userName">USERNAME</label>
+                <input type="text" id="signup-name" placeholder="Enter a unique username">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">EMAIL</label>
+                <input type="email" id="signup-email" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">PASSWORD</label>
+                <input type="password" id="signup-password" placeholder="Create a password">
+            </div>
+            
+            <button class="btn" id="signup-btn">CREATE ACCOUNT</button>
+            
+            <div class="toggle-auth">
+                Already have an account? <a id="go-to-signIn">Sign In</a>
+            </div>
+        </div>
+
+        <!-- signIn Page -->
+        <div class="page" id="signIn-page">
+            <div class="header">
+                <div class="logo">DOMAIN GUESSING</div>
+                <div class="subtitle">WELCOME BACK</div>
+                <div class="sticker">ALPHA ONE</div>
+            </div>
+            
+            <div class="icon">
+                <i class="fas fa-user-check"></i>
+            </div>
+            
+            <div class="form-group">
+                <label for="userName">USERNAME</label>
+                <input type="text" id="login-name" placeholder="Enter your username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">PASSWORD</label>
+                <input type="password" id="login-password" placeholder="Enter your password">
+            </div>
+            
+            <button class="btn" id="signIn-btn">SIGN IN</button>
+            
+            <div class="toggle-auth">
+                Don't have an account? <a id="go-to-signup">Sign Up</a>
+            </div>
+        </div>
+
+        <!-- Game Mode Selection Page -->
+        <div class="page" id="mode-page">
+            <div class="header">
+                <div class="logo">DOMAIN GUESSING</div>
+                <div class="subtitle">CHOOSE YOUR PLAY MODE</div>
+                <div class="sticker">ALPHA ONE</div>
+            </div>
+            
+            <div class="icon">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            
+            <button class="btn" id="create-team-btn">CREATE TEAM</button>
+            <button class="btn btn-secondary" id="join-team-btn">JOIN EXISTING TEAM</button>
+            <button class="btn btn-individual" id="individual-btn">PLAY INDIVIDUALLY</button>
+        </div>
+
+        <!-- Team Selection Page -->
+        <div class="page" id="team-page">
+            <div class="header">
+                <div class="logo">DOMAIN GUESSING</div>
+                <div class="subtitle">ASSEMBLE YOUR SQUAD</div>
+                <div class="sticker">ALPHA ONE</div>
+            </div>
+            
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+            
+            <div class="form-group">
+                <label for="team-name">TEAM NAME</label>
+                <input type="text" id="team-name" placeholder="Enter your team name">
+            </div>
+            
+            <div class="form-group">
+                <label for="team-members">TEAM MEMBERS</label>
+                <input type="text" id="team-members" placeholder="Enter team member names">
+            </div>
+            
+            <button class="btn" id="create-team-final-btn">CREATE TEAM</button>
+            
+            <div id="available-teams" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: rgba(255, 255, 255, 0.9);">AVAILABLE TEAMS</h3>
+                <div id="teams-container">
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No teams created yet. Be the first to create one!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Page -->
+        <div class="page" id="game-page">
+            <div class="header">
+                <div class="logo">DOMAIN GUESSING</div>
+                <div class="subtitle">REVEAL THE DOMAINS BEHIND THE TAPES</div>
+                <div class="sticker">ALPHA ONE</div>
+            </div>
+            
+            <div class="timer" id="timer">01:00</div>
+            <div class="score">SCORE: <span id="score">0</span>/100</div>
+            
+            <div id="game-instructions">
+                <p style="text-align: center; margin-bottom: 20px; color: rgba(255, 255, 255, 0.9);">
+                    Click on the red tapes to reveal the input fields. You get only ONE guess per domain!
+                    <br><strong>Guess any domain in any order - you'll get points for correct guesses!</strong>
+                </p>
+                <div style="text-align: center;">
+                    <button class="btn pulse" id="start-game-btn">START GAME</button>
+                </div>
+            </div>
+            
+            <div id="game-area" style="display: none;">
+                <div class="domain-container" id="domain-container">
+                    <!-- Domain items will be dynamically generated here -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn" id="submit-answers-btn">SUBMIT ANSWERS</button>
+                </div>
+            </div>
+            
+            <div id="game-result" style="display: none;">
+                <div class="game-status" id="result-message"></div>
+                <div style="text-align: center;">
+                    <button class="btn" id="view-leaderboard-btn">VIEW LEADERBOARD</button>
+                    <button class="btn btn-secondary" id="play-again-btn">PLAY AGAIN</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Page -->
+        <div class="page" id="leaderboard-page">
+            <div class="header">
+                <div class="logo">DOMAIN GUESSING</div>
+                <div class="subtitle">LEADERBOARD</div>
+                <div class="sticker">ALPHA ONE</div>
+            </div>
+            
+            <div class="icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            
+            <ul class="leaderboard" id="leaderboard">
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <p>No one has completed the challenge yet!</p>
+                </div>
+            </ul>
+            
+            <div style="text-align: center;">
+                <button class="btn" id="back-to-game-btn">BACK TO GAME</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span class="made-with-love">Made with ❤️ by AlphaOne</span>
+        </div>
+    </div>
+
+    <script src="index.js" ></script>
+</body>
+</html>

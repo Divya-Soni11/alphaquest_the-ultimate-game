@@ -145,7 +145,7 @@ export const CreateTeam=async(req,res)=>{
 
             await newTeam.save();
             return res.status(200).json({
-                message:`Team ${teamName} created successfully! Share the code ${teamId} to let members join.`,
+                message:`Team ${teamName} created successfully! Share the code ${newTeam.teamId} to let members join.`,
                 success:true
             });
         }
@@ -188,11 +188,11 @@ export const joinTeam=async(req,res)=>{
                     });
                 }
                 else{
-                    team.members,push(Member._id);
+                    team.members.push(Member._id);
                     await team.save();
                     await Member.save();
                     return res.status(200).json({
-                        message:`welcome to the team ${team.teamName}!`,
+                        message:`welcome to team ${team.teamName}!`,
                         success:true
                     });
                 }                    

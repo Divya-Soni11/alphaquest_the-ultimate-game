@@ -22,7 +22,7 @@ const playerSignup=new Schema({
         type:Number
     },
     teamId:{
-        type:Schema.Types.ObjectId,
+        type:String,
         ref:'team'
     }
 });
