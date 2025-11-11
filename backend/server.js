@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import routes from '../backend/routes/routes.js';
 import express from 'express';
 import dotenv from 'dotenv';
@@ -61,17 +60,3 @@ app.use((req, res, next) => {
   console.log(req.method, req.url);
   next();
 });
-=======
-import http from 'http';
-
-const server = http.createServer((req, res) => {
-  res.statusCode = 200; // Success status
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello, world!\n');
-});
-
-const PORT = 3000; // Port to listen on
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/`);
-});
->>>>>>> 282186af2ffe45eee5313900147e665fd5d4dbe2
