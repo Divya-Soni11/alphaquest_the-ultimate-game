@@ -123,6 +123,7 @@
             font-weight: 800;
             background: linear-gradient(135deg, #4d7fff, #0023FF, #0018a8);
             -webkit-background-clip: text;
+            background-clip:text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
             text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -931,11 +932,11 @@
         }
         
         function signup() {
-            const name = document.getElementById('signup-name').value;
+            const userName = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             
-            if (name && email && password) {
+            if (userName && email && password) {
                 // Check if user already exists
                 if (users.find(user => user.email === email)) {
                     alert('User with this email already exists. Please sign in instead.');
@@ -944,7 +945,7 @@
                 
                 // Create new user
                 const newUser = {
-                    name,
+                    userName,
                     email,
                     password,
                     id: Date.now()
