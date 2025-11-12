@@ -1,6 +1,7 @@
 import playerSignup from '../schema/SignupSchema.js';
 import TeamSchema from '../schema/TeamSchema.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export const signup=async(req,res)=>{
     try{
@@ -55,8 +56,6 @@ export const signup=async(req,res)=>{
         });
     }
 }
-
-import jwt from 'jsonwebtoken';
 
 export const signIn = async (req, res) => {
   try {
@@ -145,8 +144,10 @@ export const CreateTeam=async(req,res)=>{
 
             await newTeam.save();
             return res.status(200).json({
-                message:`Team ${teamName} created successfully! Share the code ${newTeam.teamId} to let members join.`,
-                success:true
+                message:"Team created successfully!",
+                success:true,
+                teamCode,
+                teamName
             });
         }
         else{
@@ -192,8 +193,10 @@ export const joinTeam=async(req,res)=>{
                     await team.save();
                     await Member.save();
                     return res.status(200).json({
-                        message:`welcome to team ${team.teamName}!`,
-                        success:true
+                        message:"team joined successfully!",
+                        success:true,
+                        teamId,
+                        teamName:team.teamName
                     });
                 }                    
             }

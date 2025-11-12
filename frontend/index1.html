@@ -30,20 +30,21 @@
             </div>
             
             <div class="form-group">
-                <label for="userName">USERNAME</label>
-                <input type="text" id="signup-name" placeholder="Enter a unique username">
+                <form id="signupForm">
+                <label for="signup-name">USERNAME</label>
+                <input type="text" name="userName" id="signup-name" placeholder="Enter a unique username">
             </div>
             
             <div class="form-group">
-                <label for="email">EMAIL</label>
-                <input type="email" id="signup-email" placeholder="Enter your email">
+                <label for="signup-email">EMAIL</label>
+                <input type="email" name="email" id="signup-email" placeholder="Enter your email">
             </div>
             
             <div class="form-group">
-                <label for="password">PASSWORD</label>
-                <input type="password" id="signup-password" placeholder="Create a password">
+                <label for="signup-password">PASSWORD</label>
+                <input type="password" name="password" id="signup-password" placeholder="Create a password">
             </div>
-            
+            </form>
             <button class="btn" id="signup-btn">CREATE ACCOUNT</button>
             
             <div class="toggle-auth">
@@ -64,15 +65,16 @@
             </div>
             
             <div class="form-group">
-                <label for="userName">USERNAME</label>
-                <input type="text" id="login-name" placeholder="Enter your username">
+                <form id="signInForm">
+                <label for="signIn-name">USERNAME</label>
+                <input type="text" name="userName" id="signIn-name" placeholder="Enter your username">
             </div>
             
             <div class="form-group">
-                <label for="password">PASSWORD</label>
-                <input type="password" id="login-password" placeholder="Enter your password">
+                <label for="signIn-password">PASSWORD</label>
+                <input type="password" name="password" id="signIn-password" placeholder="Enter your password">
             </div>
-            
+            </form>
             <button class="btn" id="signIn-btn">SIGN IN</button>
             
             <div class="toggle-auth">
@@ -109,27 +111,90 @@
                 <i class="fas fa-users"></i>
             </div>
             
+            <div id="team-code">
             <div class="form-group">
-                <label for="team-name">TEAM NAME</label>
-                <input type="text" id="team-name" placeholder="Enter your team name">
+                <form id="teamForm">
+                <label for="teamName">TEAM NAME</label>
+                <input type="text" name="teamName" id="teamName" placeholder="Enter team name">
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label for="team-members">TEAM MEMBERS</label>
-                <input type="text" id="team-members" placeholder="Enter team member names">
-            </div>
-            
+
             <button class="btn" id="create-team-final-btn">CREATE TEAM</button>
-            
-            <div id="available-teams" style="margin-top: 20px;">
-                <h3 style="margin-bottom: 15px; color: rgba(255, 255, 255, 0.9);">AVAILABLE TEAMS</h3>
-                <div id="teams-container">
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <p>No teams created yet. Be the first to create one!</p>
-                    </div>
+            <br>
+            <br>
+            <div class="form-group">
+                <div id="CreateTeamInstructions">>TYPE IN YOUR TEAM NAME <br>
+                    >CLICK ON CREATE TEAM <br>
+                    >SHARE THE GENERATED TEAM CODE WITH YOUR FRIENDS, TO LET THEM JOIN!
                 </div>
             </div>
+            </div>
+            
+            
+        </div>
+
+        <!--joining Page-->
+
+        <div class="page" id="joining-page">
+            <div class="header">
+                <div class="logo">DOMAIN GUESSING</div>
+                <div class="subtitle">JOIN YOUR SQUAD</div>
+                <div class="sticker">ALPHA ONE</div>
+            </div>
+            
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+            
+            <div id="join-team-code">
+            <div class="form-group">
+                <form id="joinTeamForm">
+                <label for="teamId">TEAM ID</label>
+                <input type="text" name="teamId" id="teamId" placeholder="Enter team code">
+                </form>
+            </div>
+
+            <button class="btn" id="join-team-final-btn">JOIN TEAM</button>
+            <br>
+            <br>
+            <div class="form-group">
+                <div id="CreateTeamInstructions">>TYPE IN YOUR TEAM ID <br>
+                    >CLICK ON JOIN TEAM <br>
+                    >READ THE INSTRUCTIONS DISPLAYED CAREFULLY, AND ENJOY PLAYING ON TEAM-CREATOR'S DEVICE!
+                </div>
+            </div>
+            </div>
+            
+            
+        </div>
+
+        <!--individual instructions page-->
+
+        <div class="page" id="instructions-page">
+            <div class="header">
+                <div class="logo">DOMAIN GUESSING</div>
+                <div class="subtitle">JOIN YOUR SQUAD</div>
+                <div class="sticker">ALPHA ONE</div>
+            </div>
+            
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+
+        <div id="instructions">
+                    > <strong>READ INSTRUCTIONS CAREFULLY, BEFORE YOU START!</strong><br>
+                    * the game is timed for 5 minutes, which start as soon as you click on <strong>start game</strong>.<br>
+                    * Rules:<br>
+                    * You will have to guess the names of top 10 trending domains of software engineering.<br>
+                    * Each correct guess earns you 10 points!<br>
+                    * Your <strong>first score</strong> determines your position in the leaderboard(both team and individual leaderboards).<br>
+                    * Though, you may play the game again, if you wish to!<br>
+                    * Team and Individual leaderboards are displayed separately.<br>
+                    * <i>hope you have a great experience playing this game!</i><br>
+                    <button class="btn" id="proceed-btn">PROCEED</button>
+                    <script>document.getElementById('proceed-btn').addEventListener('click', () => {
+           showPage(gamePage);});</script>
+        </div>
         </div>
 
         <!-- Game Page -->
@@ -143,15 +208,15 @@
             <div class="timer" id="timer">01:00</div>
             <div class="score">SCORE: <span id="score">0</span>/100</div>
             
-            <div id="game-instructions">
+            <!-- <div id="game-instructions">
                 <p style="text-align: center; margin-bottom: 20px; color: rgba(255, 255, 255, 0.9);">
                     Click on the red tapes to reveal the input fields. You get only ONE guess per domain!
                     <br><strong>Guess any domain in any order - you'll get points for correct guesses!</strong>
                 </p>
-                <div style="text-align: center;">
+            </div> -->
+            <div style="text-align: center;">
                     <button class="btn pulse" id="start-game-btn">START GAME</button>
                 </div>
-            </div>
             
             <div id="game-area" style="display: none;">
                 <div class="domain-container" id="domain-container">
@@ -195,6 +260,7 @@
                 <button class="btn" id="back-to-game-btn">BACK TO GAME</button>
             </div>
         </div>
+    
 
         <div class="footer">
             <span class="made-with-love">Made with ❤️ by AlphaOne</span>

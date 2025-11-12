@@ -3,6 +3,8 @@ const signupPage = document.getElementById('signup-page');
         const modePage = document.getElementById('mode-page');
         const teamPage = document.getElementById('team-page');
         const gamePage = document.getElementById('game-page');
+        const joiningPage = document.getElementById('joining-page');
+        const instructionsPage=document.getElementById('instructions-page');
         const leaderboardPage = document.getElementById('leaderboard-page');
         
         const signupBtn = document.getElementById('signup-btn');
@@ -10,7 +12,9 @@ const signupPage = document.getElementById('signup-page');
         const goToSignIn = document.getElementById('go-to-signIn');
         const goToSignup = document.getElementById('go-to-signup');
         const createTeamBtn = document.getElementById('create-team-btn');
+        const teamCodeDisplay=document.getElementById('team-code');
         const joinTeamBtn = document.getElementById('join-team-btn');
+        const joinTeamFinalBtn=document.getElementById('join-team-final-btn');
         const individualBtn = document.getElementById('individual-btn');
         const createTeamFinalBtn = document.getElementById('create-team-final-btn');
         const startGameBtn = document.getElementById('start-game-btn');
@@ -19,7 +23,7 @@ const signupPage = document.getElementById('signup-page');
         const playAgainBtn = document.getElementById('play-again-btn');
         const backToGameBtn = document.getElementById('back-to-game-btn');
         
-        const gameInstructions = document.getElementById('game-instructions');
+        // const gameInstructions = document.getElementById('game-instructions');
         const gameArea = document.getElementById('game-area');
         const gameResult = document.getElementById('game-result');
         const timerDisplay = document.getElementById('timer');
@@ -58,16 +62,14 @@ const signupPage = document.getElementById('signup-page');
         ];
         
         // Event Listeners
-        signupBtn.addEventListener('click', signup);
-        signInBtn.addEventListener('click', signIn);
+        
         goToSignIn.addEventListener('click', () => showPage(signInPage));
         goToSignup.addEventListener('click', () => showPage(signupPage));
         createTeamBtn.addEventListener('click', () => showPage(teamPage));
-        joinTeamBtn.addEventListener('click', joinTeam);
-        individualBtn.addEventListener('click', playIndividually);
-        createTeamFinalBtn.addEventListener('click', createTeam);
-        startGameBtn.addEventListener('click', startGame);
-        submitAnswersBtn.addEventListener('click', submitAnswers);
+        individualBtn.addEventListener('click', ()=>showPage(instructionsPage));
+        joinTeamBtn.addEventListener('click',()=>showPage(joiningPage));
+        // startGameBtn.addEventListener('click', startGame);
+        // submitAnswersBtn.addEventListener('click', submitAnswers);
         viewLeaderboardBtn.addEventListener('click', () => {
             updateLeaderboard();
             showPage(leaderboardPage);
@@ -84,119 +86,162 @@ const signupPage = document.getElementById('signup-page');
             teamPage.classList.remove('active');
             gamePage.classList.remove('active');
             leaderboardPage.classList.remove('active');
-            
+            instructionsPage.classList.remove('active');
             // Show the requested page
             page.classList.add('active');
         }
         
-        function signup() {
-            const userName = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
+        signupBtn.addEventListener('click', (e)=>{
+            const signUpForm = document.getElementById('signupForm');
             
-            if (userName && email && password) {
-                // Check if user already exists
-                if (users.find(user => user.email === email)) {
-                    alert('User with this email already exists. Please sign in instead.');
-                    return;
-                }
+            e.preventDefault();
+            console.log('form submitted');
+            const formData=new FormData(signUpForm);
+            const dataObject=Object.fromEntries(formData);
+            fetch('http://localhost:8000/alphaQuest/signUp' ,{
+                method:'POST',
+                headers:{
+                    'content-type':'application/json',
+                },
+                body:JSON.stringify(dataObject)
+            })
+            .then((response)=>{
+                console.log('response recieved');
+                return response.json()
+            })
+            .then((data)=>{
+                console.log('response saved:');
+                alert('(' + data.status + ') ' + data.message);
+                if (data.message==="SignUp successful! Sign in to play!"||data.message==="Player already signed Up, sign in to play.")
+                    showPage(signInPage);
                 
-                // Create new user
-                const newUser = {
-                    userName,
-                    email,
-                    password,
-                    id: Date.now()
-                };
+            })
+            .catch((error)=>console.error(error));
                 
-                users.push(newUser);
-                currentUser = newUser;
-                
-                showPage(modePage);
-            } else {
-                alert('Please fill in all fields.');
-            }
-        }
+           
+        });
         
-        function signIn() {
-            const email = document.getElementById('login-name').value;
-            const password = document.getElementById('login-password').value;
-            
-            if (email && password) {
-                // Find user
-                const user = users.find(u => u.email === email && u.password === password);
-                
-                if (user) {
-                    currentUser = user;
+        signInBtn.addEventListener('click', (e)=>{
+            const signInForm=document.getElementById('signInForm');
+            e.preventDefault();
+            console.log('form submitted!');
+            const formData=new FormData(signInForm);
+            const dataObject=Object.fromEntries(formData);
+            fetch('http://localhost:8000/alphaQuest/signIn',{
+                method:'POST',
+                headers:{
+                    'content-type':'application/json',
+                },
+                body:JSON.stringify(dataObject)
+            })
+            .then((response)=>{
+                console.log('response recieved!');
+                return response.json()
+            })
+            .then((data)=>{
+                console.log('response saved!');
+                alert('(' + data.status + ')' + data.message);
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    console.log('Token stored:', data.token);
+                }
+                if (data.message=='Signed in successfully!'){
                     showPage(modePage);
-                } else {
-                    alert('Invalid email or password. Please try again.');
                 }
-            } else {
-                alert('Please enter both email and password.');
-            }
-        }
+            })
+        });
         
-        function createTeam() {
-            const teamName = document.getElementById('team-name').value;
-            const teamMembers = document.getElementById('team-members').value;
-            
-            if (teamName && teamMembers) {
-                // Create new team
-                const newTeam = {
-                    name: teamName,
-                    members: teamMembers.split(',').map(m => m.trim()),
-                    score: 0,
-                    id: Date.now(),
-                    played: false
-                };
-                
-                teams.push(newTeam);
-                currentTeam = newTeam;
-                
-                // Update teams display
-                updateTeamsDisplay();
-                
-                showPage(gamePage);
-            } else {
-                alert('Please enter both team name and members.');
-            }
-        }
+        createTeamFinalBtn.addEventListener('click', (e)=>{
+            const teamForm=document.getElementById('teamForm');
+            e.preventDefault();
+            console.log('form submitted');
+            const formData=new FormData(teamForm);
+            const dataObject=Object.fromEntries(formData);
+            const token = localStorage.getItem('token');
+            fetch('http://localhost:8000/alphaQuest/createTeam',{
+                method:'POST',
+                headers:{
+                    'content-type':'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body:JSON.stringify(dataObject)
+            }).then((response)=>{
+                console.log('response recieved');
+                return response.json()
+            }).then((data)=>{
+                console.log('response saved');
+                alert('(' + data.status + ')' + data.message);
+                if (data.message=="Team created successfully!") {
+                    // Success — show the team code to user
+                    teamCodeDisplay.innerHTML = `
+                    <div id="generated-team-info">
+                    <h2>Team ID: <span style="color: #00ffcc;">${data.teamCode}</span></h2></div>
+                    <div id="instructions">
+                    > Tell your friends to enter this team code after clicking on <strong>Join Team</strong>, after signing in.<br>
+                    > <strong>READ INSTRUCTIONS CAREFULLY, BEFORE YOU START!</strong><br>
+                    * the game is timed for 5 minutes, which start as soon as you click on <strong>start game</strong>.<br>
+                    * Rules:<br>
+                    * You will have to guess the names of top 10 trending domains of software engineering.<br>
+                    * Each correct guess earns you 10 points!<br>
+                    * Your <strong>first score</strong> determines your position in the leaderboard(both team and individual leaderboards).<br>
+                    * Though, you may play the game again, if you wish to!<br>
+                    * Team and Individual leaderboards are displayed separately.<br>
+                    * <i>hope you have a great experience playing this game!</i><br>
+                    <button class="btn" id="start-team-game-btn">PROCEED</button>
+                    </div>
+                    `;
+
+  document.getElementById('start-team-game-btn').addEventListener('click', () => {
+    showPage(gamePage);
+  });
+}
+
+            })
+        });
         
-        function joinTeam() {
-            if (teams.length === 0) {
-                alert('No teams available to join. Create a new team instead.');
-                return;
-            }
-            
-            // Show team selection modal (simplified for demo)
-            let teamList = "Available Teams:\n";
-            teams.forEach((team, index) => {
-                teamList += `${index + 1}. ${team.name} (${team.played ? 'Played' : 'Not Played'})\n`;
-            });
-            
-            const teamChoice = prompt(`${teamList}\nEnter the number of the team you want to join:`);
-            const teamIndex = parseInt(teamChoice) - 1;
-            
-            if (teamIndex >= 0 && teamIndex < teams.length) {
-                const selectedTeam = teams[teamIndex];
-                
-                if (selectedTeam.played) {
-                    alert('This team has already played. Please select another team.');
-                    return;
+        joinTeamFinalBtn.addEventListener('click', (e)=>{
+            const joinTeamPage= document.getElementById('join-team-code');
+            e.preventDefault();
+            console.log('form submitted.');
+            const joinTeamForm=document.getElementById('joinTeamForm');
+            const formData=new FormData(joinTeamForm);
+            const dataObject=Object.fromEntries(formData);
+            const token = localStorage.getItem('token');
+            fetch('http://localhost:8000/alphaQuest/joinTeam',{
+                method:'POST',
+                headers:{
+                    'content-type':'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body:JSON.stringify(dataObject)
+            }).then((response)=>{
+                console.log('response recieved.');
+                return response.json()
+            }).then((data)=>{
+                console.log('response saved.');
+                alert('(' + data.status + ')' + data.message);
+                if(data.message=="team joined successfully!"){
+                    joinTeamPage.innerHTML=`
+                    <div id="joined-team-info">
+                    <h2>WELCOME TO TEAM: <span style="color: #00ffcc;">${data.teamName}</span></h2></div>
+                    <div id="instructions">
+                    > You can play as a team on your friend's (team creator) device.<br>
+                    > <strong>READ INSTRUCTIONS CAREFULLY, BEFORE YOU START!</strong><br>
+                    * the game is timed for 5 minutes, which start as soon as you click on <strong>start game</strong>.<br>
+                    * Rules:<br>
+                    * You will have to guess the names of top 10 trending domains of software engineering.<br>
+                    * Each correct guess earns you 10 points!<br>
+                    * Your <strong>first score</strong> determines your position in the leaderboard(both team and individual leaderboards).<br>
+                    * Though, you may play the game again, if you wish to!<br>
+                    * Team and Individual leaderboards are displayed separately.<br>
+                    * <i>hope you have a great experience playing this game!</i><br>
+                    </div>
+                    `;
                 }
-                
-                currentTeam = selectedTeam;
-                showPage(gamePage);
-            } else {
-                alert('Invalid team selection.');
-            }
-        }
-        
-        function playIndividually() {
-            currentTeam = null;
-            showPage(gamePage);
-        }
+            })
+            
+
+        });
         
         function playAgain() {
             if (currentTeam) {
@@ -270,7 +315,7 @@ const signupPage = document.getElementById('signup-page');
         }
         
         function startGame() {
-            gameInstructions.style.display = 'none';
+            // gameInstructions.style.display = 'none';
             gameArea.style.display = 'block';
             gameActive = true;
             
