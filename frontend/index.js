@@ -68,8 +68,8 @@ const signupPage = document.getElementById('signup-page');
         createTeamBtn.addEventListener('click', () => showPage(teamPage));
         individualBtn.addEventListener('click', ()=>showPage(instructionsPage));
         joinTeamBtn.addEventListener('click',()=>showPage(joiningPage));
-        // startGameBtn.addEventListener('click', startGame);
-        // submitAnswersBtn.addEventListener('click', submitAnswers);
+        startGameBtn.addEventListener('click', startGame);
+        submitAnswersBtn.addEventListener('click', submitAnswers);
         viewLeaderboardBtn.addEventListener('click', () => {
             updateLeaderboard();
             showPage(leaderboardPage);
@@ -324,64 +324,53 @@ const signupPage = document.getElementById('signup-page');
             
             // Start the timer
             startTimer();
+            document.getElementById('global-guess-area').style.display = 'block';
+const guessInput = document.getElementById('global-guess-input');
+guessInput.value = '';
+guessInput.focus();
+
         }
         
         function initializeDomains() {
-            domainContainer.innerHTML = '';
-            domains = [...domainData];
-            revealedDomains = 0;
-            score = 0;
-            guessedDomains = []; // Reset guessed domains
-            scoreDisplay.textContent = score;
-            
-            // Shuffle domains for variety
-            domains = shuffleArray(domains);
-            
-            // Create domain items
-            domains.forEach((domain, index) => {
-                const domainItem = document.createElement('div');
-                domainItem.className = 'domain-item';
-                domainItem.innerHTML = `
-                    <div class="points">${domain.points} pts</div>
-                    <div class="domain-tape" data-index="${index}">
-                        <span>Click to Guess</span>
-                    </div>
-                    <div class="domain-name" data-index="${index}">${domain.name}</div>
-                    <div class="guess-input-container" data-index="${index}">
-                        <input type="text" class="guess-input" placeholder="Enter your guess..." data-index="${index}">
-                        <button class="guess-btn" data-index="${index}">Guess</button>
-                    </div>
-                `;
-                domainContainer.appendChild(domainItem);
-                
-                // Add event listeners for tape and guess button
-                const tape = domainItem.querySelector('.domain-tape');
-                const guessBtn = domainItem.querySelector('.guess-btn');
-                const guessInput = domainItem.querySelector('.guess-input');
-                const inputContainer = domainItem.querySelector('.guess-input-container');
-                const domainName = domainItem.querySelector('.domain-name');
-                
-                // Tape click to reveal input
-                tape.addEventListener('click', function() {
-                    if (!gameActive) return;
-                    
-                    // Hide tape and show input
-                    tape.style.display = 'none';
-                    inputContainer.classList.add('active');
-                    guessInput.focus();
-                });
-                
-                // Guess button click - ONE GUESS ONLY
-                guessBtn.addEventListener('click', function() {
-                    makeGuess(index);
-                });
-                
-                // Enter key to submit guess
-                guessInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') makeGuess(index);
-                });
-            });
-        }
+    domainContainer.innerHTML = '';
+    domains = [...domainData];
+    revealedDomains = 0;
+    score = 0;
+    guessedDomains = []; // Reset guessed domains
+    scoreDisplay.textContent = score;
+
+    // Shuffle domains for variety
+    domains = shuffleArray(domains);
+
+    // Create domain items (no input fields or buttons per domain)
+    domains.forEach((domain, index) => {
+        const domainItem = document.createElement('div');
+        domainItem.className = 'domain-item';
+        domainItem.innerHTML = `
+            <div class="points">${domain.points} pts</div>
+            <div class="domain-tape" data-index="${index}">
+                <span>Hidden Domain</span>
+            </div>
+            <div class="domain-name" data-index="${index}">${domain.name}</div>
+        `;
+        domainContainer.appendChild(domainItem);
+
+        // --- Add event listener for tape click ---
+        const tape = domainItem.querySelector('.domain-tape');
+        const domainName = domainItem.querySelector('.domain-name');
+
+        tape.addEventListener('click', function () {
+            if (!gameActive) return;
+
+            // You could still allow clicking to "peek" at structure or trigger animation, 
+            // but no input appears anymore.
+            tape.classList.add('revealed');
+            // Optionally show domain name if you want tape click to reveal after correct guess
+            // domainName.classList.add('revealed');
+        });
+    });
+}
+
         
         function makeGuess(index) {
             if (!gameActive) return;
@@ -488,8 +477,8 @@ const signupPage = document.getElementById('signup-page');
         }
         
         function startTimer() {
-            timeLeft = 60;
-            timerDisplay.textContent = `01:00`;
+            timeLeft = 180;
+            timerDisplay.textContent = `03:00`;
             timerDisplay.style.color = '#4d7fff';
             
             timerInterval = setInterval(() => {
@@ -552,7 +541,26 @@ const signupPage = document.getElementById('signup-page');
                 resultMessage.textContent = `YOU SCORED ${score} POINTS AND REVEALED ${revealedDomains}/10 DOMAINS. KEEP PRACTICING!`;
                 resultMessage.className = 'game-status error';
             }
+            sendScoreToBackend(score);
         }
+
+        function sendScoreToBackend(finalScore) {
+    const token = localStorage.getItem('token');
+    if (!token) return console.warn("No token found; score not sent.");
+    
+    fetch('http://localhost:8000/alphaQuest/submitScore', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ score: finalScore })
+    })
+    .then(res => res.json())
+    .then(data => console.log('Score saved:', data))
+    .catch(err => console.error('Error saving score:', err));
+}
+
         
         function submitAnswers() {
             endGame();

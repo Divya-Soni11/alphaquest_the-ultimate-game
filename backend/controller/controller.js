@@ -35,8 +35,7 @@ export const signup=async(req,res)=>{
                     userName,
                     email,
                     password:hashedPwd,
-                    firstScore:null,
-                    updatedScore:null,
+                    Score:null,
                     teamId:null
                 });
                 await newPlayer.save();
@@ -212,6 +211,41 @@ export const joinTeam=async(req,res)=>{
         console.error(error);
         return res.status(500).json({
             message:"internal server error!",
+            success:false
+        });
+    }
+}
+
+export const submitScore= async (req,res)=>{
+    try{
+       const { score } = req.body;
+    const userId = req.user.userId;
+
+    const user = await user.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if(user.teamId!=null){
+         if (user.firstScore == null) {
+      user.firstScore = score;
+    } else {
+      user.updatedScore = score;
+    }
+    await user.save();
+    return res.json({ message: 'Score updated successfully', success: true });
+    }
+    else{
+        user.score = score;
+        await user.save();
+        return res.json({
+            message: 'Score updated successfully!',
+            success:true
+        });
+    }
+    }
+    catch(error){
+        console.error(error);
+        return res.status(500).json({
+            message:"Internal Server Error!",
             success:false
         });
     }

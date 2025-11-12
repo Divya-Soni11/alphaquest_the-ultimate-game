@@ -214,9 +214,14 @@
                     <br><strong>Guess any domain in any order - you'll get points for correct guesses!</strong>
                 </p>
             </div> -->
-            <div style="text-align: center;">
-                    <button class="btn pulse" id="start-game-btn">START GAME</button>
-                </div>
+            <button class="btn pulse" id="start-game-btn">START GAME</button>
+
+<!-- Single input for guessing -->
+<div id="global-guess-area" style="display:none; text-align:center; margin-top:20px;">
+    <input type="text" id="global-guess-input" class="guess-input" placeholder="Enter your guess...">
+    <button class="btn" id="global-guess-btn">GUESS</button>
+</div>
+
             
             <div id="game-area" style="display: none;">
                 <div class="domain-container" id="domain-container">

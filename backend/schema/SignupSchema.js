@@ -15,10 +15,7 @@ const playerSignup=new Schema({
         type:String,
         required:true
     },
-    firstScore:{
-        type:Number
-    },
-    updatedScore:{
+    Score:{
         type:Number
     },
     teamId:{
