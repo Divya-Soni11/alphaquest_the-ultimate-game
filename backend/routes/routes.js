@@ -12,6 +12,6 @@ routes.post('/joinTeam', authenticateUser, joinTeam);
 routes.post('/signIn',signIn);
 routes.post('/playIndividually', signIn);
 routes.post('/signUp', signup);
-routes.post('/submitScore',submitScore);
+routes.post('/submitScore', authenticateUser, submitScore);
 
 export default routes;

@@ -173,7 +173,6 @@
         <div class="page" id="instructions-page">
             <div class="header">
                 <div class="logo">DOMAIN GUESSING</div>
-                <div class="subtitle">JOIN YOUR SQUAD</div>
                 <div class="sticker">ALPHA ONE</div>
             </div>
             
@@ -183,16 +182,16 @@
 
         <div id="instructions">
                     > <strong>READ INSTRUCTIONS CAREFULLY, BEFORE YOU START!</strong><br>
-                    * the game is timed for 5 minutes, which start as soon as you click on <strong>start game</strong>.<br>
+                    * the game is timed for 3 minutes, which start as soon as you click on <strong>start game</strong>.<br>
                     * Rules:<br>
                     * You will have to guess the names of top 10 trending domains of software engineering.<br>
                     * Each correct guess earns you 10 points!<br>
-                    * Your <strong>first score</strong> determines your position in the leaderboard(both team and individual leaderboards).<br>
                     * Though, you may play the game again, if you wish to!<br>
-                    * Team and Individual leaderboards are displayed separately.<br>
+                    * Each updated score updates your position in the leaderboard.<br>
                     * <i>hope you have a great experience playing this game!</i><br>
                     <button class="btn" id="proceed-btn">PROCEED</button>
                     <script>document.getElementById('proceed-btn').addEventListener('click', () => {
+                         currentTeam = null; // reset
            showPage(gamePage);});</script>
         </div>
         </div>
@@ -217,8 +216,8 @@
             <button class="btn pulse" id="start-game-btn">START GAME</button>
 
 <!-- Single input for guessing -->
-<div id="global-guess-area" style="display:none; text-align:center; margin-top:20px;">
-    <input type="text" id="global-guess-input" class="guess-input" placeholder="Enter your guess...">
+<div id="global-guess-bar" style=" display: none; text-align:center; margin-top:20px;" class="global-guess-bar">
+    <input type="text" id="global-guess-input"  placeholder="Enter your guess...">
     <button class="btn" id="global-guess-btn">GUESS</button>
 </div>
 

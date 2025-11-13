@@ -9,6 +9,7 @@ export const signup=async(req,res)=>{
 
         if(!userName||!email||!password){
             return res.status(400).json({
+                status:400,
                 message:"Incomplte SignUp details!",
                 success:false
             });
@@ -17,13 +18,15 @@ export const signup=async(req,res)=>{
             const existingPlayer=await playerSignup.findOne({userName,email});
             const existingUserName=await playerSignup.findOne({userName});
             if(existingPlayer){
-                return res.json({
+                return res.status(400).json({
+                    status:400,
                     message:"Player already signed Up, sign in to play.",
                     success:false
                 });
             }
             else if(existingUserName){
-                return res.json({
+                return res.status(400).json({
+                    status:400,
                     message:"userName is taken, try another userName.",
                     success:false
                 });
@@ -40,6 +43,7 @@ export const signup=async(req,res)=>{
                 });
                 await newPlayer.save();
                 return res.status(200).json({
+                    status:200,
                     message:"SignUp successful! Sign in to play!",
                     success:true
                 });
@@ -50,6 +54,7 @@ export const signup=async(req,res)=>{
     catch(error){
         console.error(error);
         return res.status(500).json({
+            status:500,
             message:"Internal server error!",
             success:false
         });
@@ -62,6 +67,7 @@ export const signIn = async (req, res) => {
 
     if (!userName || !password) {
       return res.status(400).json({
+        status:400,
         message: "Enter complete details before signing in!",
         success: false
       });
@@ -71,6 +77,7 @@ export const signIn = async (req, res) => {
 
     if (!validUser) {
       return res.status(404).json({
+        status:404,
         message: "We couldn't find you in signed up players! Sign up first!",
         success: false
       });
@@ -80,6 +87,7 @@ export const signIn = async (req, res) => {
 
     if (!isPasswordValid) {
       return res.status(400).json({
+        status:400,
         message: "Incorrect password!",
         success: false
       });
@@ -97,16 +105,24 @@ export const signIn = async (req, res) => {
     });
 
     return res.status(200).json({
-      message: "Signed in successfully!",
-      success: true,
-      token // also send token in body for flexibility
+        status:200,
+        message: "Signed in successfully!",
+        success: true,
+        token, // also send token in body for flexibility
+        user:{
+            id:validUser._id,
+            userName:validUser.userName,
+            email:validUser.email,
+        }
     });
 
-  } catch (error) {
+  } 
+  catch (error) {
     console.error(error);
     return res.status(500).json({
-      message: "Internal Server error!",
-      success: false
+        status:500,
+        message: "Internal Server error!",
+        success: false
     });
   }
 };
@@ -143,14 +159,16 @@ export const CreateTeam=async(req,res)=>{
 
             await newTeam.save();
             return res.status(200).json({
+                status:200,
                 message:"Team created successfully!",
                 success:true,
-                teamCode,
-                teamName
+                teamCode:newTeam.teamId,
+                teamName:newTeam.teamName
             });
         }
         else{
             return res.status(400).json({
+                status:400,
                 message:"Can't create your team, you are already a member in another team!",
                 success:false
             });
@@ -159,6 +177,7 @@ export const CreateTeam=async(req,res)=>{
     catch(error){
         console.error(error);
         return res.status(500).json({
+            status:500,
             message:"Internal server error!",
             success:false
         });
@@ -172,6 +191,7 @@ export const joinTeam=async(req,res)=>{
 
         if(!teamId){
             return res.status(400).json({
+                status:500,
                 message:"please enter teamId",
                 success:false
             });
@@ -183,6 +203,7 @@ export const joinTeam=async(req,res)=>{
                 const team=await TeamSchema.findOne({teamId});
                 if(!team){
                     return res.status(404).json({
+                        status:404,
                         message:"team not found! Please recheck the entered team Id!",
                         success:false
                     });
@@ -192,6 +213,7 @@ export const joinTeam=async(req,res)=>{
                     await team.save();
                     await Member.save();
                     return res.status(200).json({
+                        status:200,
                         message:"team joined successfully!",
                         success:true,
                         teamId,
@@ -201,6 +223,7 @@ export const joinTeam=async(req,res)=>{
             }
             else{
                 return res.status(400).json({
+                    status:400,
                     message:`Can't join this team! you are already a member of another team!`,
                     success:false
                 });
@@ -210,43 +233,54 @@ export const joinTeam=async(req,res)=>{
     catch(error){
         console.error(error);
         return res.status(500).json({
+            status:500,
             message:"internal server error!",
             success:false
         });
     }
 }
 
-export const submitScore= async (req,res)=>{
-    try{
-       const { score } = req.body;
+export const submitScore = async (req, res) => {
+  try {
+    const { score, teamId } = req.body;
+
+    if (!req.user) {
+      return res.status(401).json({ status: 401, message: 'Unauthorized: Missing user info', success: false });
+    }
+
     const userId = req.user.userId;
+    const player = await playerSignup.findById(userId);
 
-    const user = await user.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!player) {
+      return res.status(404).json({ status: 404, message: 'User not found', success: false });
+    }
 
-    if(user.teamId!=null){
-         if (user.firstScore == null) {
-      user.firstScore = score;
+    if (teamId) {
+      // ✅ Team game
+      const team = await TeamSchema.findOne({ teamId: teamId });
+      if (!team) return res.status(404).json({ status: 404, message: 'Team not found' });
+
+      if (team.firstScore == null) {
+        team.firstScore = score;
+      } else {
+        team.updatedScore = score;
+      }
+
+      await team.save();
     } else {
-      user.updatedScore = score;
+      // ✅ Individual game
+      player.Score = score;
+      await player.save();
     }
-    await user.save();
-    return res.json({ message: 'Score updated successfully', success: true });
-    }
-    else{
-        user.score = score;
-        await user.save();
-        return res.json({
-            message: 'Score updated successfully!',
-            success:true
-        });
-    }
-    }
-    catch(error){
-        console.error(error);
-        return res.status(500).json({
-            message:"Internal Server Error!",
-            success:false
-        });
-    }
-}
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Score updated successfully!',
+      success: true
+    });
+
+  } catch (error) {
+    console.error('Error in submitScore:', error);
+    return res.status(500).json({ status: 500, message: 'Internal Server Error!', success: false });
+  }
+};
